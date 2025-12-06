@@ -111,7 +111,7 @@
       <input
         type="text"
         id="namaTambahan"
-        placeholder="Contoh: Tomi Kristiadi"
+        placeholder="Contoh: Tomi & Kristy ("
       />
 
       <button id="generateBtn" onclick="generateLink()">Generate Link</button>
@@ -126,7 +126,10 @@
     </div>
 
     <script>
-      // 3. Logika JavaScript
+      /**
+       * Fungsi utama untuk membuat URL.
+       * Menggunakan Regex untuk menghapus karakter khusus di akhir string sebelum dikodekan.
+       */
       function generateLink() {
         // Ambil nilai dari input
         const linkUtama = document.getElementById("linkUtama").value.trim();
@@ -134,25 +137,27 @@
         const outputLinkElement = document.getElementById("outputLink");
         const copyButton = document.getElementById("copyBtn");
 
-        // Pembersihan spasi di awal dan akhir nama
-        const cleanedNama = namaTambahan.trim();
+        // 1. Bersihkan spasi di awal dan akhir.
+        let cleanedNama = namaTambahan.trim();
 
-        // Mengganti spasi di tengah kata dengan tanda '+'
-        const encodedNama = cleanedNama.replace(/\s+/g, "+");
+        // 2. *** PERBAIKAN UTAMA: Hapus Karakter Khusus di Akhir ***
+        // Regex: /[\s&()\/]+$/
+        // [\s&()\/] : Mencocokkan spasi (\s), &, (, ), atau / (\/ harus di-escape).
+        // +         : Mencocokkan satu atau lebih dari karakter di atas.
+        // $         : Mencocokkan akhir string.
+        cleanedNama = cleanedNama.replace(/[\s&()\/]+$/, "");
 
-        // --- Logika Pembuatan URL ---
-        let finalURL = "";
+        let finalURL = linkUtama; // Setel link utama sebagai default
 
-        // Cek apakah link utama sudah diakhiri dengan '/'
-        const baseLink = linkUtama.endsWith("/") ? linkUtama : linkUtama + "/";
+        // 3. Cek apakah cleanedNama BUKAN string kosong (setelah dibersihkan).
+        if (cleanedNama !== "") {
+          // Hanya kodekan jika ada isinya
+          const encodedNama = encodeURIComponent(cleanedNama);
 
-        // Tambahkan parameter 'to=' jika nama tambahan tidak kosong
-        if (encodedNama !== "") {
-          finalURL = baseLink + "?to=" + encodedNama;
-        } else {
-          // Jika nama tambahan kosong, hanya gunakan link utama
-          finalURL = baseLink;
+          // Tambahkan parameter 'to='
+          finalURL = linkUtama + "?to=" + encodedNama;
         }
+        // Jika cleanedNama kosong (""), finalURL tetap linkUtama.
 
         // Tampilkan hasil dan aktifkan tombol salin
         outputLinkElement.textContent = finalURL;
