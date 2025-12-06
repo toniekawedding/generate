@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generator Link URL (Locked)</title>
+    <style>
+      /* Gaya dasar (CSS) */
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+        background-color: #f4f4f9;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      /* Style untuk input yang dikunci (readonly) */
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      input[readonly] {
+        background-color: #e9ecef; /* Latar belakang abu-abu untuk menunjukkan terkunci */
+        color: #6c757d;
+        cursor: not-allowed;
+      }
+
+      /* Style Tombol Generate */
+      #generateBtn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+      #generateBtn:hover {
+        background-color: #0056b3;
+      }
+
+      /* Area Hasil */
+      #hasil {
+        margin-top: 25px;
+        padding: 15px;
+        border: 1px solid #28a745;
+        background-color: #e2f0e8;
+        border-radius: 4px;
+      }
+      .hasil-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      #outputLink {
+        font-weight: bold;
+        color: #28a745;
+        word-wrap: break-word;
+        flex-grow: 1; /* Memungkinkan link mengambil ruang yang tersedia */
+      }
+
+      /* Style Tombol Salin */
+      #copyBtn {
+        background-color: #28a745;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-left: 10px;
+        white-space: nowrap; /* Mencegah tombol putus baris */
+      }
+      #copyBtn:hover {
+        background-color: #1e7e34;
+      }
+      #copyBtn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>🔗 Generator URL Kunci</h2>
+
+      <label for="linkUtama">Link Utama:</label>
+      <input
+        type="text"
+        id="linkUtama"
+        value="https://toniekawedding.github.io/"
+        readonly
+      />
+
+      <label for="namaTambahan">Nama Tambahan (Parameter 'to'):</label>
+      <input
+        type="text"
+        id="namaTambahan"
+        placeholder="Contoh: Tomi Kristiadi"
+      />
+
+      <button id="generateBtn" onclick="generateLink()">Generate Link</button>
+
+      <div id="hasil">
+        <p>Hasil URL:</p>
+        <div class="hasil-container">
+          <span id="outputLink"></span>
+          <button id="copyBtn" onclick="copyLink()" disabled>Salin 📋</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 3. Logika JavaScript
+      function generateLink() {
+        // Ambil nilai dari input
+        const linkUtama = document.getElementById("linkUtama").value.trim();
+        const namaTambahan = document.getElementById("namaTambahan").value;
+        const outputLinkElement = document.getElementById("outputLink");
+        const copyButton = document.getElementById("copyBtn");
+
+        // Pembersihan spasi di awal dan akhir nama
+        const cleanedNama = namaTambahan.trim();
+
+        // Mengganti spasi di tengah kata dengan tanda '+'
+        const encodedNama = cleanedNama.replace(/\s+/g, "+");
+
+        // --- Logika Pembuatan URL ---
+        let finalURL = "";
+
+        // Cek apakah link utama sudah diakhiri dengan '/'
+        const baseLink = linkUtama.endsWith("/") ? linkUtama : linkUtama + "/";
+
+        // Tambahkan parameter 'to=' jika nama tambahan tidak kosong
+        if (encodedNama !== "") {
+          finalURL = baseLink + "?to=" + encodedNama;
+        } else {
+          // Jika nama tambahan kosong, hanya gunakan link utama
+          finalURL = baseLink;
+        }
+
+        // Tampilkan hasil dan aktifkan tombol salin
+        outputLinkElement.textContent = finalURL;
+        copyButton.disabled = false; // Aktifkan tombol salin
+      }
+
+      /**
+       * Fungsi untuk menyalin teks dari elemen outputLink ke clipboard.
+       */
+      function copyLink() {
+        const linkToCopy = document.getElementById("outputLink").textContent;
+        const copyButton = document.getElementById("copyBtn");
+
+        // Menggunakan Clipboard API untuk menyalin teks secara modern
+        navigator.clipboard
+          .writeText(linkToCopy)
+          .then(() => {
+            // Memberikan feedback visual
+            copyButton.textContent = "Berhasil Disalin! ✅";
+            // Kembalikan teks tombol setelah beberapa saat
+            setTimeout(() => {
+              copyButton.textContent = "Salin 📋";
+            }, 2000);
+          })
+          .catch((err) => {
+            // Handle error, misalnya jika browser tidak mendukung Clipboard API
+            console.error("Gagal menyalin: ", err);
+            alert("Gagal menyalin link. Silakan coba blok dan salin manual.");
+          });
+      }
+    </script>
+  </body>
+</html>
